@@ -9,9 +9,9 @@ RACE=-race
 
 if [[ "$OSTYPE" = "darwin"* ]]
 then
-  if go version | grep 'go1.17.[012345]'
+  if go version | grep 'go1.18.[012345]'
   then
-    # -race with plug-ins on x86 MacOS 12 with
+    # -race with plug-ins on x86 MacOzS 12 with
     # go1.17 before 1.17.6 sometimes crash.
     RACE=
     echo '*** Turning off -race since it may not work on a Mac'
@@ -81,6 +81,9 @@ sleep 1
 $TIMEOUT ../mrworker ../../mrapps/wc.so &
 $TIMEOUT ../mrworker ../../mrapps/wc.so &
 $TIMEOUT ../mrworker ../../mrapps/wc.so &
+$TIMEOUT ../mrworker ../../mrapps/wc.so &
+$TIMEOUT ../mrworker ../../mrapps/wc.so &
+$TIMEOUT ../mrworker ../../mrapps/wc.so &
 
 # wait for the coordinator to exit.
 wait $pid
@@ -116,6 +119,9 @@ sleep 1
 
 # start multiple workers
 $TIMEOUT ../mrworker ../../mrapps/indexer.so &
+$TIMEOUT ../mrworker ../../mrapps/indexer.so &
+$TIMEOUT ../mrworker ../../mrapps/indexer.so &
+$TIMEOUT ../mrworker ../../mrapps/indexer.so &
 $TIMEOUT ../mrworker ../../mrapps/indexer.so
 
 sort mr-out* | grep . > mr-indexer-all
@@ -138,6 +144,9 @@ rm -f mr-*
 $TIMEOUT ../mrcoordinator ../pg*txt &
 sleep 1
 
+$TIMEOUT ../mrworker ../../mrapps/mtiming.so &
+$TIMEOUT ../mrworker ../../mrapps/mtiming.so &
+$TIMEOUT ../mrworker ../../mrapps/mtiming.so &
 $TIMEOUT ../mrworker ../../mrapps/mtiming.so &
 $TIMEOUT ../mrworker ../../mrapps/mtiming.so
 
@@ -170,6 +179,9 @@ $TIMEOUT ../mrcoordinator ../pg*txt &
 sleep 1
 
 $TIMEOUT ../mrworker ../../mrapps/rtiming.so &
+$TIMEOUT ../mrworker ../../mrapps/rtiming.so &
+$TIMEOUT ../mrworker ../../mrapps/rtiming.so &
+$TIMEOUT ../mrworker ../../mrapps/rtiming.so &
 $TIMEOUT ../mrworker ../../mrapps/rtiming.so
 
 NT=`cat mr-out* | grep '^[a-z] 2' | wc -l | sed 's/ //g'`
@@ -193,7 +205,10 @@ $TIMEOUT ../mrcoordinator ../pg*txt &
 sleep 1
 
 $TIMEOUT ../mrworker ../../mrapps/jobcount.so &
+$TIMEOUT ../mrworker ../../mrapps/jobcount.so &
+$TIMEOUT ../mrworker ../../mrapps/jobcount.so &
 $TIMEOUT ../mrworker ../../mrapps/jobcount.so
+$TIMEOUT ../mrworker ../../mrapps/jobcount.so &
 $TIMEOUT ../mrworker ../../mrapps/jobcount.so &
 $TIMEOUT ../mrworker ../../mrapps/jobcount.so
 
@@ -225,6 +240,9 @@ rm -f $DF
 sleep 1
 
 # start multiple workers.
+($TIMEOUT ../mrworker ../../mrapps/early_exit.so ; touch $DF) &
+($TIMEOUT ../mrworker ../../mrapps/early_exit.so ; touch $DF) &
+($TIMEOUT ../mrworker ../../mrapps/early_exit.so ; touch $DF) &
 ($TIMEOUT ../mrworker ../../mrapps/early_exit.so ; touch $DF) &
 ($TIMEOUT ../mrworker ../../mrapps/early_exit.so ; touch $DF) &
 ($TIMEOUT ../mrworker ../../mrapps/early_exit.so ; touch $DF) &
@@ -280,6 +298,11 @@ rm -f mr-done
 sleep 1
 
 # start multiple workers
+$TIMEOUT ../mrworker ../../mrapps/crash.so &
+$TIMEOUT ../mrworker ../../mrapps/crash.so &
+$TIMEOUT ../mrworker ../../mrapps/crash.so &
+$TIMEOUT ../mrworker ../../mrapps/crash.so &
+$TIMEOUT ../mrworker ../../mrapps/crash.so &
 $TIMEOUT ../mrworker ../../mrapps/crash.so &
 
 # mimic rpc.go's coordinatorSock()

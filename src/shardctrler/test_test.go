@@ -86,22 +86,22 @@ func TestBasic(t *testing.T) {
 	ck := cfg.makeClient(cfg.All())
 
 	fmt.Printf("Test: Basic leave/join ...\n")
-
 	cfa := make([]Config, 6)
+	fmt.Println(1)
 	cfa[0] = ck.Query(-1)
 
 	check(t, []int{}, ck)
-
+	fmt.Println(2)
 	var gid1 int = 1
 	ck.Join(map[int][]string{gid1: []string{"x", "y", "z"}})
 	check(t, []int{gid1}, ck)
 	cfa[1] = ck.Query(-1)
-
+	fmt.Println(3)
 	var gid2 int = 2
 	ck.Join(map[int][]string{gid2: []string{"a", "b", "c"}})
 	check(t, []int{gid1, gid2}, ck)
 	cfa[2] = ck.Query(-1)
-
+	fmt.Println(4)
 	cfx := ck.Query(-1)
 	sa1 := cfx.Groups[gid1]
 	if len(sa1) != 3 || sa1[0] != "x" || sa1[1] != "y" || sa1[2] != "z" {
@@ -111,11 +111,11 @@ func TestBasic(t *testing.T) {
 	if len(sa2) != 3 || sa2[0] != "a" || sa2[1] != "b" || sa2[2] != "c" {
 		t.Fatalf("wrong servers for gid %v: %v\n", gid2, sa2)
 	}
-
+	fmt.Println(5)
 	ck.Leave([]int{gid1})
 	check(t, []int{gid2}, ck)
 	cfa[4] = ck.Query(-1)
-
+	fmt.Println(6)
 	ck.Leave([]int{gid2})
 	cfa[5] = ck.Query(-1)
 

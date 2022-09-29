@@ -24,6 +24,6 @@ func main() {
 	for m.Done() == false {
 		time.Sleep(time.Second)
 	}
-
+	//if m.Done() is true ,this process will exit 0.
 	time.Sleep(time.Second)
 }

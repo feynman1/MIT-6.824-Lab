@@ -29,10 +29,13 @@ func TestStaticShards(t *testing.T) {
 	cfg := make_config(t, 3, false, -1)
 	defer cfg.cleanup()
 
+	//fmt.Println(1)
 	ck := cfg.makeClient()
 
 	cfg.join(0)
 	cfg.join(1)
+
+	//fmt.Println(2)
 
 	n := 10
 	ka := make([]string, n)
@@ -42,10 +45,11 @@ func TestStaticShards(t *testing.T) {
 		va[i] = randstring(20)
 		ck.Put(ka[i], va[i])
 	}
+	//fmt.Println(3)
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 	}
-
+	//fmt.Println(4)
 	// make sure that the data really is sharded by
 	// shutting down one shard and checking that some
 	// Get()s don't succeed.
@@ -64,7 +68,7 @@ func TestStaticShards(t *testing.T) {
 			}
 		}(xi)
 	}
-
+	//fmt.Println(5)
 	// wait a bit, only about half the Gets should succeed.
 	ndone := 0
 	done := false
@@ -84,7 +88,7 @@ func TestStaticShards(t *testing.T) {
 	if ndone != 5 {
 		t.Fatalf("expected 5 completions with one shard dead; got %v\n", ndone)
 	}
-
+	//fmt.Println(6)
 	// bring the crashed shard/group back to life.
 	cfg.StartGroup(1)
 	for i := 0; i < n; i++ {
@@ -99,6 +103,7 @@ func TestJoinLeave(t *testing.T) {
 
 	cfg := make_config(t, 3, false, -1)
 	defer cfg.cleanup()
+	//fmt.Println(1)
 
 	ck := cfg.makeClient()
 
@@ -115,31 +120,35 @@ func TestJoinLeave(t *testing.T) {
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 	}
-
+	//fmt.Println(2)
 	cfg.join(1)
 
+	//fmt.Println(2.1)
+
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 		x := randstring(5)
 		ck.Append(ka[i], x)
 		va[i] += x
 	}
-
+	//fmt.Println(3)
 	cfg.leave(0)
-
+	//fmt.Println(3.1)
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
+		//fmt.Println(n, 3.2)
 		x := randstring(5)
 		ck.Append(ka[i], x)
 		va[i] += x
 	}
-
+	//fmt.Println(4)
 	// allow time for shards to transfer.
 	time.Sleep(1 * time.Second)
 
 	cfg.checklogs()
 	cfg.ShutdownGroup(0)
 
+	//fmt.Println(5)
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
 	}
@@ -175,11 +184,12 @@ func TestSnapshot(t *testing.T) {
 
 	for i := 0; i < n; i++ {
 		check(t, ck, ka[i], va[i])
+		//fmt.Println(1)
 		x := randstring(20)
 		ck.Append(ka[i], x)
 		va[i] += x
 	}
-
+	//fmt.Println(2)
 	cfg.leave(1)
 	cfg.join(0)
 

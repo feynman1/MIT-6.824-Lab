@@ -22,8 +22,25 @@ type ExampleReply struct {
 	Y int
 }
 
-// Add your RPC definitions here.
+const (
+	MAP = iota
+	REDUCE
+	WAIT
+)
 
+type RpcStructure struct {
+	MapIndex         int
+	ReduceIndex      int
+	MapInputFile     string
+	MapOutputFile    []string
+	ReduceInputFile  []string
+	ReduceOutputFile string
+	MyWorkIsDone     bool
+	WorkType         int
+	ReduceNum        int
+	TaskNum          int
+	MapNum           int
+}
 
 // Cook up a unique-ish UNIX-domain socket name
 // in /var/tmp, for the coordinator.

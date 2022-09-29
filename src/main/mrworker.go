@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	mapf, reducef := loadPlugin(os.Args[1])
+	mapf, reducef := loadPlugin(os.Args[1]) //loajd Map and Reduce
 
 	mr.Worker(mapf, reducef)
 }

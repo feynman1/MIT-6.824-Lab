@@ -23,11 +23,13 @@ func (a ByKey) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByKey) Less(i, j int) bool { return a[i].Key < a[j].Key }
 
 func main() {
+	fmt.Printf("zjy\n")
 	if len(os.Args) < 3 {
 		fmt.Fprintf(os.Stderr, "Usage: mrsequential xxx.so inputfiles...\n")
 		os.Exit(1)
 	}
 
+	// read Map and Reduce from the plugin
 	mapf, reducef := loadPlugin(os.Args[1])
 
 	//
@@ -47,7 +49,7 @@ func main() {
 		}
 		file.Close()
 		kva := mapf(filename, string(content))
-		intermediate = append(intermediate, kva...)
+		intermediate = append(intermediate, kva...) //intermediate is a slice
 	}
 
 	//
@@ -82,7 +84,6 @@ func main() {
 
 		i = j
 	}
-
 	ofile.Close()
 }
 

@@ -8,12 +8,23 @@ package shardkv
 //
 // You will have to modify these definitions.
 //
+const NShards = 10
 
 const (
-	OK             = "OK"
-	ErrNoKey       = "ErrNoKey"
-	ErrWrongGroup  = "ErrWrongGroup"
-	ErrWrongLeader = "ErrWrongLeader"
+	OK                     = "OK"
+	ErrNoKey               = "ErrNoKey"
+	ErrWrongGroup          = "ErrWrongGroup"
+	ErrWrongLeader         = "ErrWrongLeader"
+	ErrWrongConfigNum      = "ErrWrongConfigNum"
+	ErrWrongShardNotArrive = "ErrWrongShardNotArrive"
+)
+
+const (
+	GET       = "Get"
+	PUT       = "Put"
+	APPEND    = "Append"
+	MIGRATION = "Migration"
+	NEWCONFIG = "NewConfig"
 )
 
 type Err string
@@ -27,6 +38,8 @@ type PutAppendArgs struct {
 	// You'll have to add definitions here.
 	// Field names must start with capital letters,
 	// otherwise RPC will break.
+	ClientId int64
+	SeqId    int
 }
 
 type PutAppendReply struct {
@@ -36,6 +49,8 @@ type PutAppendReply struct {
 type GetArgs struct {
 	Key string
 	// You'll have to add definitions here.
+	ClientId int64
+	SeqId    int
 }
 
 type GetReply struct {

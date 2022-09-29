@@ -8,7 +8,9 @@ package shardkv
 // talks to the group that holds the key's shard.
 //
 
-import "6.824/labrpc"
+import (
+	"6.824/labrpc"
+)
 import "crypto/rand"
 import "math/big"
 import "6.824/shardctrler"
@@ -40,6 +42,9 @@ type Clerk struct {
 	config   shardctrler.Config
 	make_end func(string) *labrpc.ClientEnd
 	// You will have to modify this struct.
+	seqId    int
+	clientId int64
+	leaderId int
 }
 
 //
@@ -56,6 +61,8 @@ func MakeClerk(ctrlers []*labrpc.ClientEnd, make_end func(string) *labrpc.Client
 	ck.sm = shardctrler.MakeClerk(ctrlers)
 	ck.make_end = make_end
 	// You'll have to add code here.
+	ck.clientId = nrand()
+	ck.seqId = 0
 	return ck
 }
 
@@ -66,12 +73,17 @@ func MakeClerk(ctrlers []*labrpc.ClientEnd, make_end func(string) *labrpc.Client
 // You will have to modify this function.
 //
 func (ck *Clerk) Get(key string) string {
+	ck.seqId++
 	args := GetArgs{}
 	args.Key = key
-
+	args.ClientId = ck.clientId
+	args.SeqId = ck.seqId
 	for {
+		//key->shard
 		shard := key2shard(key)
+		//shard->gid
 		gid := ck.config.Shards[shard]
+		//gid->servers
 		if servers, ok := ck.config.Groups[gid]; ok {
 			// try each server for the shard.
 			for si := 0; si < len(servers); si++ {
@@ -79,6 +91,7 @@ func (ck *Clerk) Get(key string) string {
 				var reply GetReply
 				ok := srv.Call("ShardKV.Get", &args, &reply)
 				if ok && (reply.Err == OK || reply.Err == ErrNoKey) {
+					ck.leaderId = si
 					return reply.Value
 				}
 				if ok && (reply.Err == ErrWrongGroup) {
@@ -100,21 +113,26 @@ func (ck *Clerk) Get(key string) string {
 // You will have to modify this function.
 //
 func (ck *Clerk) PutAppend(key string, value string, op string) {
+	ck.seqId++
 	args := PutAppendArgs{}
 	args.Key = key
 	args.Value = value
 	args.Op = op
-
-
+	args.SeqId = ck.seqId
+	args.ClientId = ck.clientId
 	for {
+		//key->shard
 		shard := key2shard(key)
+		//shard->gid
 		gid := ck.config.Shards[shard]
+		//gid->servers
 		if servers, ok := ck.config.Groups[gid]; ok {
 			for si := 0; si < len(servers); si++ {
 				srv := ck.make_end(servers[si])
 				var reply PutAppendReply
 				ok := srv.Call("ShardKV.PutAppend", &args, &reply)
 				if ok && reply.Err == OK {
+					ck.leaderId = si
 					return
 				}
 				if ok && reply.Err == ErrWrongGroup {
@@ -130,8 +148,9 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 }
 
 func (ck *Clerk) Put(key string, value string) {
-	ck.PutAppend(key, value, "Put")
+	ck.PutAppend(key, value, PUT)
 }
+
 func (ck *Clerk) Append(key string, value string) {
-	ck.PutAppend(key, value, "Append")
+	ck.PutAppend(key, value, APPEND)
 }

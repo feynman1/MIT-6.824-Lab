@@ -1196,7 +1196,6 @@ func TestSnapshotInstallUnCrash2D(t *testing.T) {
 // do the servers persist the snapshots, and
 // restart using snapshot along with the
 // tail of the log?
-//
 func TestSnapshotAllCrash2D(t *testing.T) {
 	servers := 3
 	iters := 5
